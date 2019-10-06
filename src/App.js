@@ -36,7 +36,7 @@ const uploadSingleFile = async ({
 };
 
 const buildDestinationFromString = bucketString => {
-  const [bucket, prefix, isPublic, region] = bucketString.split('|');
+  const [bucket, prefix, isPublic, region] = bucketString.split(',');
   if (!bucket) {
     return null;
   }
