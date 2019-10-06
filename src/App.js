@@ -1,13 +1,23 @@
 import React from 'react';
+import styled from 'styled-components';
+import { Normalize } from 'styled-normalize';
 
-import './App.css';
 import { UploadField } from './UploadField/';
+
+const Body = styled.div`
+  margin: 0 auto;
+  max-width: 800px;
+  padding: 5px;
+`;
 
 function App() {
   return (
-    <div className="App">
-      <UploadField />
-    </div>
+    <React.Fragment>
+      <Normalize />
+      <Body className="App">
+        <UploadField />
+      </Body>
+    </React.Fragment>
   );
 }
 
