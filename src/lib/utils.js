@@ -11,7 +11,10 @@ function toTime(time) {
   return new Date(time).toISOString().replace(/[:-]|\.\d{3}/g, '');
 }
 
-function toDate(time) {
+function toDate(time, stripDash = true) {
+  if (!stripDash) {
+    return new Date(time).toISOString().substring(0, 10);
+  }
   return toTime(time).substring(0, 8);
 }
 

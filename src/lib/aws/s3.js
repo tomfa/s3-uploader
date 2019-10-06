@@ -1,5 +1,5 @@
 import * as auth from './auth';
-import { replaceAll } from '../utils';
+import { replaceAll, toDate } from '../utils';
 
 const doFileUpload = async ({
   key,
@@ -44,7 +44,11 @@ const uploadFile = async ({ fileObj, destination, keys }) => {
   const { accessKey, secretKey } = keys;
 
   const acl = isPublic ? 'public-read' : 'private';
-  const expiryDate = '2019-12-29';
+
+  const today = new Date();
+  const tomorrow = new Date();
+  tomorrow.setDate(today.getDate() + 1);
+  const expiryDate = toDate(tomorrow, false);
 
   const credentials = auth.getCredentials({ region, accessKey, expiryDate });
   const policy = auth.generatePolicy({
