@@ -1,8 +1,9 @@
-import React from 'react';
+import React, { useState, Fragment } from 'react';
 import styled from 'styled-components';
 import { Normalize } from 'styled-normalize';
 
-import { UploadField } from './UploadField/';
+import { FileDrop } from './components/FileDrop';
+import { FileList } from './components/FileList';
 
 const Body = styled.div`
   margin: 0 auto;
@@ -11,13 +12,16 @@ const Body = styled.div`
 `;
 
 function App() {
+  const [files, setFiles] = useState([]);
+
   return (
-    <React.Fragment>
+    <Fragment>
       <Normalize />
       <Body className="App">
-        <UploadField />
+        <FileDrop setFiles={setFiles} />
+        <FileList files={files} />
       </Body>
-    </React.Fragment>
+    </Fragment>
   );
 }
 
