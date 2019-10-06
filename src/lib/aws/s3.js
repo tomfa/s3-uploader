@@ -2,6 +2,7 @@ import * as auth from './auth';
 import { replaceAll } from '../utils';
 
 const doFileUpload = async ({
+  key,
   fileObj,
   bucket,
   policy,
@@ -14,7 +15,7 @@ const doFileUpload = async ({
 
   const payload = {
     acl,
-    key: fileObj.path,
+    key: key,
     'Content-Type': fileObj.type,
 
     'x-amz-server-side-encryption': 'AES256',
@@ -38,24 +39,21 @@ const doFileUpload = async ({
   });
 };
 
-const uploadFile = async ({ fileObj, isPublic = false }) => {
-  // TODO: Dummy values
-  const region = 'eu-central-1';
-  const bucket = '...';
-  const accessKey = '...';
-  const secretKey = '...';
-  const acl = isPublic ? 'public-read' : 'private';
+const uploadFile = async ({ fileObj, destination, keys }) => {
+  const { region, isPublic, bucket, prefix } = destination;
+  const { accessKey, secretKey } = keys;
 
+  const acl = isPublic ? 'public-read' : 'private';
   const expiryDate = '2019-12-29';
+
   const credentials = auth.getCredentials({ region, accessKey, expiryDate });
   const policy = auth.generatePolicy({
     bucket,
     credentials,
     expiryDate,
+    prefix,
   });
 
-  // TODO: Got to extract this signature generation to a secure server,
-  // or require user to input themselves.
   const signature = auth.getS3UploadSignature({
     region,
     policy,
@@ -63,6 +61,7 @@ const uploadFile = async ({ fileObj, isPublic = false }) => {
     expiryDate,
   });
   await doFileUpload({
+    key: `${prefix}${fileObj.path}`,
     fileObj,
     bucket,
     policy,

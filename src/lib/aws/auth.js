@@ -17,13 +17,13 @@ const generatePolicy = ({
   bucket,
   credentials,
   expiryDate,
-  filePrefix = '',
+  prefix,
   designatedId = null,
 }) => {
   const conditions = [
     { bucket: bucket },
-    ['starts-with', '$key', filePrefix],
-    ['starts-with', '$content-type', filePrefix],
+    ['starts-with', '$key', prefix],
+    ['starts-with', '$content-type', ''],
     ['starts-with', '$acl', ''],
     { 'x-amz-server-side-encryption': 'AES256' },
     { 'x-amz-credential': credentials },
