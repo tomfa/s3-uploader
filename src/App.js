@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from 'react';
+import React, { useState, useEffect, Fragment } from 'react';
 import styled from 'styled-components';
 import { Normalize } from 'styled-normalize';
 
@@ -8,6 +8,7 @@ import { uploadFile } from './lib/aws/s3';
 import { StorageSelector } from './components/StorageSelector';
 import { KeyInput } from './components/KeyInput';
 import { getQueryParams } from './lib/utils';
+import {Destination} from "./components/Destination";
 
 const Body = styled.div`
   margin: 0 auto;
@@ -34,36 +35,48 @@ const uploadSingleFile = async ({
   return fileObj;
 };
 
+const buildDestinationFromString = bucketString => {
+  const [bucket, prefix, isPublic, region] = bucketString.split('|');
+  if (!bucket) {
+    return null;
+  }
+  return {
+    bucket,
+    prefix: prefix || '',
+    isPublic: isPublic === 'true',
+    region: region || 'eu-central-1',
+  };
+};
+
+
 function App() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [destinations] = useState([
-    {
-      region: 'eu-central-1',
-      bucket: 'test-bucket',
-      prefix: 'images/',
-      isPublic: true,
-    },
-    {
-      region: 'eu-central-1',
-      bucket: 'test-bucket',
-      prefix: 'images/thumbnails/',
-      isPublic: true,
-    },
-  ]);
+  const [destinations, setDestinations] = useState([]);
   const [chosenDestination, setChosenDestination] = useState(
     destinations.length > 0 ? destinations[0] : null,
     [destinations],
   );
+
   const [accessKey, setAccessKey] = useState('');
   const [secretKey, setSecretKey] = useState('');
-  const params = getQueryParams();
-  if (params['access-key'] && params['access-key'] !== accessKey) {
-    setAccessKey(params['access-key']);
-  }
-  if (params['secret-key'] && params['secret-key'] !== secretKey) {
-    setSecretKey(params['secret-key']);
-  }
+
+  useEffect(() => {
+    const params = getQueryParams();
+    if (params['access-key']) {
+      setAccessKey(params['access-key']);
+    }
+    if (params['secret-key']) {
+      setSecretKey(params['secret-key']);
+    }
+    const buckets = params['buckets'] && params['buckets'].split(';');
+
+    if (buckets && buckets.length > 0) {
+      const parsedDestinations = buckets.map(buildDestinationFromString).filter(d => !!d)
+      setDestinations(parsedDestinations);
+      setChosenDestination(parsedDestinations[0])
+    }
+  }, []);
 
   const onDrop = async newFiles => {
     const oldFiles = files;
@@ -109,12 +122,7 @@ function App() {
             setKey={setSecretKey}
           />
         </Panel>
-        <p>
-          <span>Uploading to: </span>
-          <strong>
-            {chosenDestination.bucket}/{chosenDestination.prefix}
-          </strong>
-        </p>
+        <Destination destination={chosenDestination} />
         <StorageSelector
           destinations={destinations}
           selectDestination={onSelectDestination}
