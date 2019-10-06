@@ -6,15 +6,25 @@ const ListItem = styled.li`
   list-style: none;
 `;
 
-const FileList = ({ files }) =>
-  files.length > 0 ? (
-    <ul>
-      {files.map(file => (
-        <ListItem key={file.path}>{file.name}</ListItem>
-      ))}
-    </ul>
-  ) : (
-    <Fragment />
+const Spinner = ({ loading }) => (loading ? <p>Loading...</p> : <Fragment />);
+
+const FileList = ({ files, loading }) => {
+  if (files.length === 0) {
+    return <Spinner loading={loading} />;
+  }
+  return (
+    <Fragment>
+      <Spinner loading={loading} />
+      <ul>
+        {files.map(file => (
+          <ListItem key={file.path}>
+            {file.path}
+            {file.uploaded ? '– Uploaded' : ''}
+          </ListItem>
+        ))}
+      </ul>
+    </Fragment>
   );
+};
 
 export { FileList };
