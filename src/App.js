@@ -7,6 +7,7 @@ import { FileList } from './components/FileList';
 import { uploadFile } from './lib/aws/s3';
 import { StorageSelector } from './components/StorageSelector';
 import { KeyInput } from './components/KeyInput';
+import { getQueryParams } from './lib/utils';
 
 const Body = styled.div`
   margin: 0 auto;
@@ -36,7 +37,7 @@ const uploadSingleFile = async ({
 function App() {
   const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [destinations, setDestination] = useState([
+  const [destinations] = useState([
     {
       region: 'eu-central-1',
       bucket: 'test-bucket',
@@ -54,8 +55,15 @@ function App() {
     destinations.length > 0 ? destinations[0] : null,
     [destinations],
   );
-  const [accessKey, setAccessKey] = useState(null);
-  const [secretKey, setSecretKey] = useState(null);
+  const [accessKey, setAccessKey] = useState('');
+  const [secretKey, setSecretKey] = useState('');
+  const params = getQueryParams();
+  if (params['access-key'] && params['access-key'] !== accessKey) {
+    setAccessKey(params['access-key']);
+  }
+  if (params['secret-key'] && params['secret-key'] !== secretKey) {
+    setSecretKey(params['secret-key']);
+  }
 
   const onDrop = async newFiles => {
     const oldFiles = files;

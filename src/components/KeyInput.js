@@ -16,6 +16,7 @@ const KeyInput = ({ label, placeholder, currentValue, setKey }) => (
     <Label htmlFor="">{label}</Label>
     <input
       type="text"
+      value={currentValue}
       placeholder={placeholder}
       onChange={ev => setKey(ev.target.value)}
     />

@@ -18,4 +18,21 @@ function toDate(time, stripDash = true) {
   return toTime(time).substring(0, 8);
 }
 
-export { decodeJSONfromb64, encodeJSONtob64, replaceAll, toDate, toTime };
+const getQueryParams = () => {
+  const urlParams = new URLSearchParams(window.location.search);
+  const keys = urlParams.keys();
+  const params = {};
+  for (const key of keys) {
+    params[key] = urlParams.get(key);
+  }
+  return params;
+};
+
+export {
+  decodeJSONfromb64,
+  encodeJSONtob64,
+  replaceAll,
+  toDate,
+  toTime,
+  getQueryParams,
+};
